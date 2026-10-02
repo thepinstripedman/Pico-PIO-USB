@@ -17,6 +17,7 @@
 #include "pico/stdlib.h"
 
 #include "pio_usb.h"
+#include "interval_override.h"
 #include "usb_definitions.h"
 #include "pio_usb_ll.h"
 #include "usb_crc.h"
@@ -362,6 +363,10 @@ void __no_inline_not_in_flash_func(pio_usb_ll_configure_endpoint)(
     if ((1 << bit_idx) <= d->interval) {
       ep->interval = (1 << bit_idx);
     }
+  }
+  uint8_t interval_override_local = interval_override;
+  if (interval_override_local) {
+    ep->interval = interval_override_local;
   }
   ep->interval_counter = 0;
   ep->data_id = 0;
