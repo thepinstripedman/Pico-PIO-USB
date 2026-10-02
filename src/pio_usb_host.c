@@ -278,7 +278,7 @@ void __not_in_flash_func(pio_usb_host_frame)(void) {
 
             if (is_periodic) {
               uint8_t interval_override_local = interval_override;
-              ep->interval_counter = (interval_override_local ? interval_override_local : ep->interval) - 1;
+              ep->interval_counter = (interval_override_local != 0 ? interval_override_local : ep->interval) - 1;
             }
           }
 
@@ -977,7 +977,7 @@ static int enumerate_device(usb_device_t *device, uint8_t address) {
           if (ep != NULL) {
             {
               uint8_t interval_override_local = interval_override;
-              ep->interval = interval_override_local ? interval_override_local : d->interval;
+              ep->interval = interval_override_local != 0 ? interval_override_local : d->interval;
             }
             ep->interval_counter = 0;
             ep->size = d->max_size[0] | (d->max_size[1] << 8);
@@ -1357,7 +1357,7 @@ void set_interval_override(uint8_t interval)
 {
   // we don't enforce powers of two
   interval_override = interval;
-  if (interval) {
+  if (interval != 0) {
     for (int ep_pool_idx = 0; ep_pool_idx < PIO_USB_EP_POOL_CNT; ep_pool_idx++) {
       endpoint_t *ep = PIO_USB_ENDPOINT(ep_pool_idx);
       if (ep->size) {

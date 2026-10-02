@@ -365,7 +365,7 @@ void __no_inline_not_in_flash_func(pio_usb_ll_configure_endpoint)(
     }
   }
   uint8_t interval_override_local = interval_override;
-  if (interval_override_local) {
+  if (interval_override_local != 0) {
     ep->interval = interval_override_local;
   }
   ep->interval_counter = 0;
