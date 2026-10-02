@@ -254,8 +254,13 @@ void __not_in_flash_func(pio_usb_host_frame)(void) {
       endpoint_t *ep = PIO_USB_ENDPOINT(ep_pool_idx);
       if ((ep->root_idx == root_idx) && ep->size) {
         bool const is_periodic = ((ep->attr & 0x03) == EP_ATTR_INTERRUPT);
+        uint8_t const ov = interval_override;
 
-        if (is_periodic && (ep->interval_counter > 0)) {
+        // Host override faster than the device's endpoint interval: poll every SOF.
+        if (is_periodic && ov != 0 && ov < ep->interval) {
+          ep->interval = ov;
+          ep->interval_counter = 0;
+        } else if (is_periodic && (ep->interval_counter > 0)) {
           ep->interval_counter--;
           continue;
         }
